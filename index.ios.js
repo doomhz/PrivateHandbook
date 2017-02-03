@@ -4,51 +4,60 @@
  * @flow
  */
 
-import React from 'react';
+import React from 'react'
 import {
   AppRegistry,
   StyleSheet,
   Navigator
-} from 'react-native';
-import Main from './App/Components/Main';
-import Login from './App/Components/Login';
-import ToDoList from './App/Components/ToDoList';
-import Info from './App/Components/Info';
+} from 'react-native'
+import { Provider } from 'react-redux'
+import configureStore from './App/lib/phbw/src/config/store'
+import { loadCurrentUser } from './App/lib/phbw/src/store/auth/actions'
+import Main from './App/Components/Main'
+import Login from './App/Components/Login'
+import ToDoList from './App/Components/ToDoList'
+import Info from './App/Components/Info'
+
+
+const store = configureStore()
+store.dispatch(loadCurrentUser())
 
 class PrivateHandbook extends React.Component {
   renderScene(route, navigator){
     switch (route.id) {
       case 'Login':
-        return <Login navigator={navigator} {...route.passProps} />;
+        return <Login navigator={navigator} {...route.passProps} />
       case 'ToDoList':
-        return <ToDoList navigator={navigator} {...route.passProps} />;
+        return <ToDoList navigator={navigator} {...route.passProps} />
       case 'Info':
-        return <Info navigator={navigator} {...route.passProps} />;
+        return <Info navigator={navigator} {...route.passProps} />
       default:
-        return <Main navigator={navigator} {...route.passProps} />;
+        return <Main navigator={navigator} {...route.passProps} />
     }
   }
   render() {
     return (
-      <Navigator
-        ref={(ref) => {
-          this._navigator = ref;
-        }}
-        initialRoute={{
-          title: "Brush My Life",
-          id: "main"
-        }}
-        renderScene={this.renderScene}
-        style={styles.container}
-      />
-    );
+      <Provider store={store}>
+        <Navigator
+          ref={(ref) => {
+            this._navigator = ref
+          }}
+          initialRoute={{
+            title: 'Brush My Life',
+            id: 'main'
+          }}
+          renderScene={this.renderScene}
+          style={styles.container}
+        />
+      </Provider>
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: '#fff'
   }
-});
+})
 
-AppRegistry.registerComponent('PrivateHandbook', () => PrivateHandbook);
+AppRegistry.registerComponent('PrivateHandbook', () => PrivateHandbook)

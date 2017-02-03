@@ -2,11 +2,11 @@ import {AsyncStorage} from 'react-native';
 import {differenceBy} from 'lodash';
 import {
   TYPE_DO, TYPE_DECIDE, TYPE_DELEGATE,
-  TYPE_DELETE, STORAGE_KEY_NAME,
-  APP
+  TYPE_DELETE, STORAGE_KEY_NAME
 } from './Constants.js'
+import {FIREBASE_APP} from './../lib/FirebaseApp'
 
-const db = APP.database();
+const db = FIREBASE_APP.database()
 
 const getTodos = ()=> {
   return AsyncStorage.getItem(STORAGE_KEY_NAME)

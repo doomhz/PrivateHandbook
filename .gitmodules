@@ -1,0 +1,3 @@
+[submodule "App/lib/phbw"]
+	path = App/lib/phbw
+	url = git@github.com:doomhz/private_handbook_web.git
