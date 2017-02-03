@@ -1,8 +1,8 @@
 import React from 'react'
-
+import { connect } from 'react-redux'
 import {
-  View, Animated
-} from 'react-native';
+  View
+} from 'react-native'
 import {
   Container, Content,
   Grid, Col, Row, Text,
@@ -10,59 +10,30 @@ import {
   Header, Title,
   Button, Icon,
   InputGroup, Input
-} from 'native-base';
-import Modal from 'react-native-modalbox';
-import IconAwesome from 'react-native-vector-icons/FontAwesome';
+} from 'native-base'
+import Modal from 'react-native-modalbox'
+import IconAwesome from 'react-native-vector-icons/FontAwesome'
 import {
-  TYPE_DO, TYPE_DECIDE, TYPE_DELEGATE, TYPE_DELETE
-} from '../helpers/Constants.js'
-import {
-  syncUserTodos, getTodosByStatus
-} from '../helpers/TodoStorage'
-import {
-  loadCurrentUser, signOut, registerAuthStateChangeEvent
-} from '../helpers/Auth'
-import TodoStorage from '../helpers/TodoStorage'
+  TYPE_DO, TYPE_DECIDE, TYPE_DELEGATE, TYPE_DELETE,
+  TODO_STATUS_ACTIVE
+} from '../lib/phbw/src/constants'
 import {
   mainStyles
 } from '../helpers/Styles'
-
+import {loadTodos, addTodo} from '../lib/phbw/src/store/todos/actions'
+import {getGroupedTodosByTypeAndStatus} from '../lib/phbw/src/store/todos/selectors'
 
 class Main extends React.Component{
   constructor(props){
-    super(props);
+    super(props)
     this.state = {
-      user: null,
-      todos: [],
-      listOpacity: new Animated.Value(0),
       showQuickAdd: false,
-      quickAddType: "",
-      addTodoValue: ""
+      quickAddType: null,
+      addTodoValue: ''
     }
   }
-  componentWillReceiveProps(nextProps){
-    this.loadActiveTodos()
-  }
   componentDidMount() {
-    this.loadCurrentUser()
-    registerAuthStateChangeEvent(()=> this.loadCurrentUser())
-    this.loadActiveTodos()
-    Animated.timing(this.state.listOpacity, {
-      toValue: 1,
-      duration: 250,
-    }).start()
-  }
-  loadActiveTodos(){
-    return getTodosByStatus("active")
-    .then((todos)=> {
-      this.setState({
-        todos: todos
-      })
-      return todos
-    })
-  }
-  loadCurrentUser(){
-    loadCurrentUser().then((userData)=> this.setState({user: userData}))
+    this.props.dispatch(loadTodos({sync: true}))
   }
   goToList(listName){
     this.props.navigator.push({
@@ -81,51 +52,33 @@ class Main extends React.Component{
   addTodo(todo = {}){
     if (!todo.title) todo.title = this.state.addTodoValue
     todo.type = this.state.quickAddType
-    return TodoStorage.addTodo(todo)
-    .then(()=> {
-      this.loadActiveTodos()
-      this.setState({
-        quickAddType: "",
-        addTodoValue: ""
-      })
-    })
+    this.props.dispatch(addTodo(todo, {sync: true}))
+    this.setState({quickAddType: '', addTodoValue: ''})
   }
   handleQuickAdd(){
     if (!this.state.addTodoValue) return
     this.addTodo()
-    .then(()=> this.toggleQuickAdd())
-  }
-  signOut(){
-    let afterLogOut = ()=> this.setState({user: null}) || alert("Logged out!")
-    signOut().then(afterLogOut).catch(afterLogOut)
-  }
-  sync(){
-    if (!this.state.user) return this.props.navigator.push({id: "Login"})
-    syncUserTodos(this.state.user.uid)
-    .then(()=> alert(`Successfully synced for ${this.state.user.email}.`))
-    .catch(()=> alert(`Could not sync for ${this.state.user.email}. Please try again.`))
+    this.toggleQuickAdd()
   }
   renderActiveTodos(type){
-    let todos = this.state.todos.filter((t)=> t.type === type)
-    if (todos.length)
-      return (
-        <Animated.View style={{opacity: this.state.listOpacity}}>
-          {todos.map((t, i)=> {
-            return (
-              <View key={i} style={mainStyles.todoTextOverview}>
-                <IconAwesome
-                  name="square-o"
-                  size={20}
-                  color="#555"
-                  style={{paddingTop: 2}}
-                />
-                <Text style={mainStyles.todoTextOverviewText} numberOfLines={1}>{t.title}</Text>
-              </View>
-            )
-          })}
-        </Animated.View>
-      )
-    return <View></View>
+    if (!this.props.todos[type]) return <View></View>
+    return (
+      <View>
+        {this.props.todos[type].map((t, i)=> {
+          return (
+            <View key={i} style={mainStyles.todoTextOverview}>
+              <IconAwesome
+                name="square-o"
+                size={20}
+                color="#555"
+                style={{paddingTop: 2}}
+              />
+              <Text style={mainStyles.todoTextOverviewText} numberOfLines={1}>{t.title}</Text>
+            </View>
+          )
+        })}
+      </View>
+    )
   }
   renderCard(type, opts){
     return (
@@ -141,7 +94,7 @@ class Main extends React.Component{
           >
             <IconAwesome
               name='plus-circle'
-              style={{fontSize: 19, color: "#AAA"}}
+              style={{fontSize: 19, color: '#AAA'}}
             />
           </Button>
         </CardItem>
@@ -156,51 +109,53 @@ class Main extends React.Component{
     )
   }
   renderQuickAddModal() {
-    if (this.state.showQuickAdd) return (
-      <Modal
-        backdropPressToClose={false}
-        isOpen={true}
-        startOpen={true}
-        swipeToClose={false}
-        backdrop={true}
-      >
-        <View style={mainStyles.quickAddModalContent}>
-          <InputGroup borderType='regular' style={mainStyles.quickAddForm}>
-            <Input
-              onChange={(event)=> this.setState({addTodoValue: event.nativeEvent.text})}
-              onSubmitEditing={()=> this.handleQuickAdd()}
-              value={this.state.addTodoValue}
-              placeholder={`Add ${this.state.quickAddType.toUpperCase()} task`}
-              autoCorrect={false}
-              autoCapitalize="none"
-              blurOnSubmit={false}
-              autoFocus={true}
-              returnKeyLabel="next"
-            />
-          </InputGroup>
-          <Button
-            success
-            block
-            style={mainStyles.quickAddButton}
-            onPress={()=> this.handleQuickAdd()}
-          >
-            Add
-          </Button>
-          <Button
-            block
-            style={mainStyles.quickAddButton}
-            onPress={()=> this.toggleQuickAdd()}
-          >
-            Close
-          </Button>
-        </View>
-      </Modal>
-    )
+    if (this.state.showQuickAdd) {
+      return (
+        <Modal
+          backdropPressToClose={false}
+          isOpen={true}
+          startOpen={true}
+          swipeToClose={false}
+          backdrop={true}
+        >
+          <View style={mainStyles.quickAddModalContent}>
+            <InputGroup borderType='regular' style={mainStyles.quickAddForm}>
+              <Input
+                onChange={(event)=> this.setState({addTodoValue: event.nativeEvent.text})}
+                onSubmitEditing={()=> this.handleQuickAdd()}
+                value={this.state.addTodoValue}
+                placeholder={`Add ${this.state.quickAddType.toUpperCase()} task`}
+                autoCorrect={false}
+                autoCapitalize="none"
+                blurOnSubmit={false}
+                autoFocus={true}
+                returnKeyLabel="next"
+              />
+            </InputGroup>
+            <Button
+              success
+              block
+              style={mainStyles.quickAddButton}
+              onPress={()=> this.handleQuickAdd()}
+            >
+              Add
+            </Button>
+            <Button
+              block
+              style={mainStyles.quickAddButton}
+              onPress={()=> this.toggleQuickAdd()}
+            >
+              Close
+            </Button>
+          </View>
+        </Modal>
+      )
+    }
     return null
   }
   render() {
     return (
-      <Container style={{backgroundColor: "#fff"}}>
+      <Container style={{backgroundColor: '#fff'}}>
         <Header>
           <Button
             transparent
@@ -238,8 +193,12 @@ class Main extends React.Component{
           {this.renderQuickAddModal()}
         </Content>
       </Container>
-    );
+    )
   }
-};
+}
 
-module.exports = Main;
+const mapStateToProps = (state)=> ({
+  todos: getGroupedTodosByTypeAndStatus(state, TODO_STATUS_ACTIVE)
+})
+
+export default connect(mapStateToProps)(Main)

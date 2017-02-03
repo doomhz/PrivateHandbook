@@ -1,10 +1,10 @@
 import {
   AsyncStorage
-} from 'react-native';
+} from 'react-native'
 import {
   AUTH_KEY_NAME
 } from './Constants.js'
-import {FIREBASE_APP} from './../lib/FirebaseApp'
+import {FIREBASE_APP} from './../lib/phbw/src/lib/FirebaseApp'
 
 const auth = FIREBASE_APP.auth()
 

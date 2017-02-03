@@ -1,10 +1,7 @@
-import {AsyncStorage} from 'react-native';
-import {differenceBy} from 'lodash';
-import {
-  TYPE_DO, TYPE_DECIDE, TYPE_DELEGATE,
-  TYPE_DELETE, STORAGE_KEY_NAME
-} from './Constants.js'
-import {FIREBASE_APP} from './../lib/FirebaseApp'
+import {AsyncStorage} from 'react-native'
+import {differenceBy} from 'lodash'
+import {STORAGE_KEY_NAME} from './Constants.js'
+import {FIREBASE_APP} from './../lib/phbw/src/lib/FirebaseApp'
 
 const db = FIREBASE_APP.database()
 
@@ -125,4 +122,4 @@ module.exports = {
   deleteTodo: deleteTodo,
 
   syncUserTodos: syncUserTodos
-};
+}

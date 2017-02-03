@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 export const toDoListStyles = StyleSheet.create({
   todoList: {
@@ -22,12 +22,12 @@ export const toDoListStyles = StyleSheet.create({
     flex: 1
   },
   todoItemTextCompleted: {
-    textDecorationLine: "line-through",
+    textDecorationLine: 'line-through',
     paddingLeft: 10,
     paddingTop: 2,
     fontSize: 15,
     flex: 1,
-    color: "#DDD"
+    color: '#DDD'
   },
   addTodoBox: {
     marginTop: 10,
@@ -39,24 +39,24 @@ export const toDoListStyles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 15,
     textAlign: 'center',
-    fontSize: 15,
+    fontSize: 15
   },
   rowBack: {
     alignItems: 'center',
     backgroundColor: '#FFF',
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   rowFront: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFF'
   },
   deleteButton: {
-    backgroundColor: "red",
+    backgroundColor: 'red',
     padding: 5
   },
   deleteButtonText: {
-    color: "#FFF"
+    color: '#FFF'
   }
 })
 
@@ -88,16 +88,16 @@ export const mainStyles = StyleSheet.create({
   },
   cardItem: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   todoTextOverview: {
     // flex: 1,
     flexDirection: 'row',
-    overflow: "hidden"
+    overflow: 'hidden'
   },
   todoTextOverviewText: {
     fontSize: 15,
-    color: "#000",
+    color: '#000',
     paddingLeft: 5
   },
   row: {
@@ -114,14 +114,14 @@ export const mainStyles = StyleSheet.create({
   quickAddModalContent: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: "center",
+    justifyContent: 'center',
     alignItems: 'center',
     paddingLeft: 20,
     paddingRight: 20,
     backgroundColor: 'rgba(0,0,0,0.5)'
   },
   quickAddForm: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 5
   },
   quickAddButton: {
