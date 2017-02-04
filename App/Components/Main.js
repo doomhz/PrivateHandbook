@@ -19,9 +19,13 @@ import {
 } from '../lib/phbw/src/constants'
 import {
   mainStyles
-} from '../helpers/Styles'
+} from '../lib/Styles'
 import {loadTodos, addTodo} from '../lib/phbw/src/store/todos/actions'
 import {getGroupedTodosByTypeAndStatus} from '../lib/phbw/src/store/todos/selectors'
+import * as authSelectors from '../lib/phbw/src/store/auth/selectors'
+import { logout } from '../lib/phbw/src/store/auth/actions'
+import { loadCurrentUser } from '../lib/phbw/src/store/auth/actions'
+import { syncTodos } from '../lib/phbw/src/store/todos/actions'
 
 class Main extends React.Component{
   constructor(props){
@@ -33,6 +37,7 @@ class Main extends React.Component{
     }
   }
   componentDidMount() {
+    this.props.dispatch(loadCurrentUser())
     this.props.dispatch(loadTodos({sync: true}))
   }
   goToList(listName){
@@ -41,6 +46,11 @@ class Main extends React.Component{
       passProps: {
         listName: listName
       }
+    })
+  }
+  goToAuth(){
+    this.props.navigator.push({
+      id: 'Login'
     })
   }
   toggleQuickAdd(type){
@@ -59,6 +69,12 @@ class Main extends React.Component{
     if (!this.state.addTodoValue) return
     this.addTodo()
     this.toggleQuickAdd()
+  }
+  signOut(){
+    this.props.dispatch(logout())
+  }
+  sync(){
+    this.props.dispatch(syncTodos())
   }
   renderActiveTodos(type){
     if (!this.props.todos[type]) return <View></View>
@@ -157,19 +173,39 @@ class Main extends React.Component{
     return (
       <Container style={{backgroundColor: '#fff'}}>
         <Header>
-          <Button
-            transparent
-            onPress={()=> this.signOut()}
-          >
-            <Icon name='ios-power' />
-          </Button>
+          {this.props.currentUser &&
+            <Button
+              transparent
+              onPress={()=> this.signOut()}
+            >
+              <Icon name='ios-power' />
+            </Button>
+          }
+          {!this.props.currentUser &&
+            <Button
+              transparent
+              onPress={()=> this.goToAuth()}
+            >
+              <Icon name='ios-person' />
+            </Button>
+          }
           <Title>Private Handbook</Title>
-          <Button
-            transparent
-            onPress={()=> this.sync()}
-          >
-            <Icon name='ios-sync' />
-          </Button>
+          {this.props.currentUser &&
+            <Button
+              transparent
+              onPress={()=> this.sync()}
+            >
+              <Icon name='ios-sync' />
+            </Button>
+          }
+          {!this.props.currentUser &&
+            <Button
+              transparent
+              onPress={()=> this.goToAuth()}
+            >
+              <Icon name='ios-sync' />
+            </Button>
+          }
         </Header>
         <Content contentContainerStyle={{flex: 1, paddingBottom: 5, paddingTop: 5}}>
           <Grid>
@@ -198,6 +234,7 @@ class Main extends React.Component{
 }
 
 const mapStateToProps = (state)=> ({
+  currentUser: authSelectors.getCurrentUser(state),
   todos: getGroupedTodosByTypeAndStatus(state, TODO_STATUS_ACTIVE)
 })
 

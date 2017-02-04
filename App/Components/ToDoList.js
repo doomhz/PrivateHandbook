@@ -19,7 +19,7 @@ import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import TodoStorage from '../helpers/TodoStorage'
 import {
   toDoListStyles
-} from '../helpers/Styles'
+} from '../lib/Styles'
 
 class ToDoList extends React.Component{
   constructor(props) {

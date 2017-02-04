@@ -14,9 +14,9 @@ import { Provider } from 'react-redux'
 import configureStore from './App/lib/phbw/src/config/store'
 import { loadCurrentUser } from './App/lib/phbw/src/store/auth/actions'
 import Main from './App/Components/Main'
-// import Login from './App/Components/Login'
+import Login from './App/Components/Login'
 // import ToDoList from './App/Components/ToDoList'
-// import Info from './App/Components/Info'
+import Info from './App/Components/Info'
 
 
 const store = configureStore()
@@ -25,12 +25,12 @@ const store = configureStore()
 class PrivateHandbook extends React.Component {
   renderScene(route, navigator){
     switch (route.id) {
-      // case 'Login':
-      //   return <Login navigator={navigator} {...route.passProps} />
+      case 'Login':
+        return <Login navigator={navigator} {...route.passProps} />
       // case 'ToDoList':
       //   return <ToDoList navigator={navigator} {...route.passProps} />
-      // case 'Info':
-      //   return <Info navigator={navigator} {...route.passProps} />
+      case 'Info':
+        return <Info navigator={navigator} {...route.passProps} />
       default:
         return <Main navigator={navigator} {...route.passProps} />
     }

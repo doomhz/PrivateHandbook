@@ -1,41 +1,51 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import {
   Container, Content,
   Header, Title,
   List, ListItem,
   InputGroup, Icon, Input,
-  Button
-} from 'native-base';
-import {
-  login, signup
-} from '../helpers/Auth'
+  Button, Card, CardItem, Text
+} from 'native-base'
 import {
   loginStyles
-} from '../helpers/Styles'
+} from '../lib/Styles'
+import {
+  login, signup, resetLoginErrors, resetSignupErrors
+} from '../lib/phbw/src/store/auth/actions'
+import * as authSelectors from '../lib/phbw/src/store/auth/selectors'
 
 class Login extends React.Component{
   constructor(props){
-    super(props);
+    super(props)
     this.state = {}
   }
-  login(){
-    if (!this.state.email || !this.state.password) return
-    login(this.state.email, this.state.password)
-    .then(()=> this.goBack())
-    .catch((error)=> alert(error.message))
+  componentDidMount(){
+    this.props.dispatch(resetSignupErrors())
+    this.props.dispatch(resetLoginErrors())
   }
-  signup(){
+  componentWillReceiveProps(nextProps){
+    if (!this.props.currentUser && nextProps.currentUser) {
+      this.goBack()
+    }
+  }
+  auth(action){
     if (!this.state.email || !this.state.password) return
-    signup(this.state.email, this.state.password)
-    .then(()=> this.goBack())
-    .catch((error)=> alert(error.message))
+    this.props.dispatch(resetSignupErrors())
+    this.props.dispatch(resetLoginErrors())
+    if (action === 'login') {
+      this.props.dispatch(login(this.state))
+    }
+    if (action === 'signup') {
+      this.props.dispatch(signup(this.state))
+    }
   }
   goBack(){
-    this.props.navigator.pop();
+    this.props.navigator.pop()
   }
   render(){
     return (
-      <Container style={{backgroundColor: "#fff"}}>
+      <Container style={{backgroundColor: '#fff'}}>
         <Header>
           <Button
             transparent
@@ -46,7 +56,7 @@ class Login extends React.Component{
           <Title>Authenticate</Title>
         </Header>
         <Content>
-          <List>
+          <List style={loginStyles.list}>
             <ListItem>
               <InputGroup>
                 <Icon name='ios-person' />
@@ -73,29 +83,47 @@ class Login extends React.Component{
                 />
               </InputGroup>
             </ListItem>
-            <ListItem>
-              <Button
-                onPress={()=> this.signup()}
-                block
-                primary
-              >
-                Sign Up
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                onPress={()=> this.login()}
-                block
-                info
-              >
-                Login
-              </Button>
-            </ListItem>
           </List>
+          <Button
+            onPress={()=> this.auth('signup')}
+            block
+            primary
+            style={loginStyles.authButton}
+          >
+            Sign Up
+          </Button>
+          <Button
+            onPress={()=> this.auth('login')}
+            block
+            info
+            style={loginStyles.authButton}
+          >
+            Login
+          </Button>
+          {this.props.signupError &&
+            <Card style={loginStyles.errorCard}>
+              <CardItem>                        
+                <Text style={loginStyles.errorText}>{this.props.signupError}</Text>
+              </CardItem>
+            </Card>
+          }
+          {this.props.loginError &&
+            <Card style={loginStyles.errorCard}>
+              <CardItem>                        
+                <Text style={loginStyles.errorText}>{this.props.loginError}</Text>
+              </CardItem>
+            </Card>
+          }
         </Content>
       </Container>
-    );
+    )
   }
-};
+}
 
-module.exports = Login;
+const mapStateToProps = (state)=> ({
+  signupError: authSelectors.getSignupErrors(state),
+  loginError: authSelectors.getLoginErrors(state),
+  currentUser: authSelectors.getCurrentUser(state)
+})
+
+export default connect(mapStateToProps)(Login)

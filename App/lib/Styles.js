@@ -67,6 +67,23 @@ export const infoStyles = StyleSheet.create({
 })
 
 export const loginStyles = StyleSheet.create({
+  errorCard: {
+    margin: 10,
+    marginTop: 20,
+    backgroundColor: '#f2dede',
+    borderColor: '#ebccd1'
+  },
+  errorText: {
+    color: '#a94442',
+    fontWeight: 'bold'
+  },
+  list: {
+    paddingRight: 15
+  },
+  authButton: {
+    margin: 10,
+    marginBottom: 0
+  }
 })
 
 export const mainStyles = StyleSheet.create({

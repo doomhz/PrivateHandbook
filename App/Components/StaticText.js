@@ -1,10 +1,10 @@
 import React from 'react'
 import {
   StyleSheet
-} from 'react-native';
+} from 'react-native'
 import {
   View, Text
-} from 'native-base';
+} from 'native-base'
 
 const BulletList = (props)=> {
   if (!props.items.length) return <View></View>
@@ -61,14 +61,14 @@ const styleSheet = {
     paddingRight: 5,
     paddingTop: 5,
     paddingBottom: 5,
-    textAlign: "justify"
+    textAlign: 'justify'
   },
   paragraphText: {
     paddingLeft: 5,
     paddingRight: 5,
     paddingTop: 5,
     paddingBottom: 5,
-    textAlign: "justify"
+    textAlign: 'justify'
   }
 }
 
