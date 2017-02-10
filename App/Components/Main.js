@@ -42,7 +42,7 @@ class Main extends React.Component{
   }
   goToList(listName){
     this.props.navigator.push({
-      id: 'ToDoList',
+      id: 'TodosList',
       passProps: {
         listName: listName
       }

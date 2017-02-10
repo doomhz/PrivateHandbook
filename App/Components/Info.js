@@ -6,19 +6,12 @@ import {
 } from 'native-base'
 import {
   TYPE_DO, TYPE_DECIDE, TYPE_DELEGATE,
-  TYPE_DELETE
+  TYPE_DELETE, TYPE_TITLES
 } from '../lib/phbw/src/constants'
 import {Paragraph, BulletList} from './StaticText'
 import {
   infoStyles
 } from '../lib/Styles'
-
-const TITLES = {
-  [`${TYPE_DO}`]: 'Urgent Important',
-  [`${TYPE_DECIDE}`]: 'Not Urgent Important',
-  [`${TYPE_DELEGATE}`]: 'Urgent Not Important',
-  [`${TYPE_DELETE}`]: 'Not Urgent Not Important'
-}
 
 class Info extends React.Component{
   constructor(props) {
@@ -37,7 +30,7 @@ class Info extends React.Component{
           >
             <Icon name='ios-arrow-back' />
           </Button>
-          <Title>{TITLES[this.props.infoName]} ({this.props.infoName.toUpperCase()})</Title>
+          <Title>{TYPE_TITLES[this.props.infoName]} ({this.props.infoName.toUpperCase()})</Title>
         </Header>
         <Content>
           {MATRIX_INFO[this.props.infoName]}
