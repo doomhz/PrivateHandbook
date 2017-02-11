@@ -15,7 +15,7 @@ import configureStore from './App/lib/phbw/src/config/store'
 import { loadCurrentUser } from './App/lib/phbw/src/store/auth/actions'
 import Main from './App/Components/Main'
 import Login from './App/Components/Login'
-import TodosList from './App/Components/TodosList'
+import Todos from './App/Components/Todos'
 import Info from './App/Components/Info'
 
 
@@ -27,8 +27,8 @@ class PrivateHandbook extends React.Component {
     switch (route.id) {
       case 'Login':
         return <Login navigator={navigator} {...route.passProps} />
-      case 'TodosList':
-        return <TodosList navigator={navigator} {...route.passProps} />
+      case 'Todos':
+        return <Todos navigator={navigator} {...route.passProps} />
       case 'Info':
         return <Info navigator={navigator} {...route.passProps} />
       default:

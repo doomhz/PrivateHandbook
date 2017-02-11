@@ -9,9 +9,7 @@ import {
   TYPE_DELETE, TYPE_TITLES
 } from '../lib/phbw/src/constants'
 import {Paragraph, BulletList} from './StaticText'
-import {
-  infoStyles
-} from '../lib/Styles'
+import {infoStyles} from '../lib/Styles'
 
 class Info extends React.Component{
   constructor(props) {

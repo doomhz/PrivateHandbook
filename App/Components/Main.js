@@ -1,25 +1,18 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import {
-  View
-} from 'react-native'
-import {
   Container, Content,
   Grid, Col, Row, Text,
-  Card, CardItem,
   Header, Title,
-  Button, Icon,
-  InputGroup, Input
+  Button, Icon
 } from 'native-base'
-import Modal from 'react-native-modalbox'
-import IconAwesome from 'react-native-vector-icons/FontAwesome'
+import TodoCard from './TodoCard'
+import QuickAddModal from './QuickAddModal'
 import {
   TYPE_DO, TYPE_DECIDE, TYPE_DELEGATE, TYPE_DELETE,
   TODO_STATUS_ACTIVE
 } from '../lib/phbw/src/constants'
-import {
-  mainStyles
-} from '../lib/Styles'
+import {mainStyles} from '../lib/Styles'
 import {loadTodos, addTodo} from '../lib/phbw/src/store/todos/actions'
 import {getGroupedTodosByTypeAndStatus} from '../lib/phbw/src/store/todos/selectors'
 import * as authSelectors from '../lib/phbw/src/store/auth/selectors'
@@ -42,7 +35,7 @@ class Main extends React.Component{
   }
   goToList(listName){
     this.props.navigator.push({
-      id: 'TodosList',
+      id: 'Todos',
       passProps: {
         listName: listName
       }
@@ -75,99 +68,6 @@ class Main extends React.Component{
   }
   sync(){
     this.props.dispatch(syncTodos())
-  }
-  renderActiveTodos(type){
-    if (!this.props.todos[type]) return <View></View>
-    return (
-      <View>
-        {this.props.todos[type].map((t, i)=> {
-          return (
-            <View key={i} style={mainStyles.todoTextOverview}>
-              <IconAwesome
-                name="square-o"
-                size={20}
-                color="#555"
-                style={{paddingTop: 2}}
-              />
-              <Text style={mainStyles.todoTextOverviewText} numberOfLines={1}>{t.title}</Text>
-            </View>
-          )
-        })}
-      </View>
-    )
-  }
-  renderCard(type, opts){
-    return (
-      <Card style={opts.style}>
-        <CardItem
-          header
-        >
-          <Text>{type}</Text>
-          <Button
-            transparent
-            onPress={()=> this.toggleQuickAdd(type)}
-            style={{height: 19}}
-          >
-            <IconAwesome
-              name='plus-circle'
-              style={{fontSize: 19, color: '#AAA'}}
-            />
-          </Button>
-        </CardItem>
-        <CardItem
-          button
-          onPress={()=> this.goToList(type)}
-          style={mainStyles.cardItem}
-        >
-          {this.renderActiveTodos(type)}
-        </CardItem>
-      </Card>
-    )
-  }
-  renderQuickAddModal() {
-    if (this.state.showQuickAdd) {
-      return (
-        <Modal
-          backdropPressToClose={false}
-          isOpen={true}
-          startOpen={true}
-          swipeToClose={false}
-          backdrop={true}
-        >
-          <View style={mainStyles.quickAddModalContent}>
-            <InputGroup borderType='regular' style={mainStyles.quickAddForm}>
-              <Input
-                onChange={(event)=> this.setState({addTodoValue: event.nativeEvent.text})}
-                onSubmitEditing={()=> this.handleQuickAdd()}
-                value={this.state.addTodoValue}
-                placeholder={`Add ${this.state.quickAddType.toUpperCase()} task`}
-                autoCorrect={false}
-                autoCapitalize="none"
-                blurOnSubmit={false}
-                autoFocus={true}
-                returnKeyLabel="next"
-              />
-            </InputGroup>
-            <Button
-              success
-              block
-              style={mainStyles.quickAddButton}
-              onPress={()=> this.handleQuickAdd()}
-            >
-              Add
-            </Button>
-            <Button
-              block
-              style={mainStyles.quickAddButton}
-              onPress={()=> this.toggleQuickAdd()}
-            >
-              Close
-            </Button>
-          </View>
-        </Modal>
-      )
-    }
-    return null
   }
   render() {
     return (
@@ -211,22 +111,58 @@ class Main extends React.Component{
           <Grid>
             <Row style={mainStyles.row}>
               <Col style={mainStyles.colLeft}>                
-                {this.renderCard(TYPE_DO, {style: mainStyles.cardLeftTop})}
+                <TodoCard
+                  type={TYPE_DO}
+                  style={mainStyles.cardLeftTop}
+                  onAddTodoClick={()=> this.toggleQuickAdd(TYPE_DO)}
+                  onClick={()=> this.goToList(TYPE_DO)}
+                  todos={this.props.todos[TYPE_DO]}
+                />
               </Col>
               <Col style={mainStyles.colRight}>
-                {this.renderCard(TYPE_DECIDE, {style: mainStyles.cardRightTop})}
+                <TodoCard
+                  type={TYPE_DECIDE}
+                  style={mainStyles.cardRightTop}
+                  onAddTodoClick={()=> this.toggleQuickAdd(TYPE_DECIDE)}
+                  onClick={()=> this.goToList(TYPE_DECIDE)}
+                  todos={this.props.todos[TYPE_DECIDE]}
+                />
               </Col>
             </Row>
             <Row style={mainStyles.row}>
               <Col style={mainStyles.colLeft}>
-                {this.renderCard(TYPE_DELEGATE, {style: mainStyles.cardLeftBottom})}
+                <TodoCard
+                  type={TYPE_DELEGATE}
+                  style={mainStyles.cardLeftBottom}
+                  onAddTodoClick={()=> this.toggleQuickAdd(TYPE_DELEGATE)}
+                  onClick={()=> this.goToList(TYPE_DELEGATE)}
+                  todos={this.props.todos[TYPE_DELEGATE]}
+                />
               </Col>
               <Col style={mainStyles.colRight}>
-                {this.renderCard(TYPE_DELETE, {style: mainStyles.cardRightBottom})}
+                <TodoCard
+                  type={TYPE_DELETE}
+                  style={mainStyles.cardRightBottom}
+                  onAddTodoClick={()=> this.toggleQuickAdd(TYPE_DELETE)}
+                  onClick={()=> this.goToList(TYPE_DELETE)}
+                  todos={this.props.todos[TYPE_DELETE]}
+                />
               </Col>
             </Row>
           </Grid>
-          {this.renderQuickAddModal()}
+          <QuickAddModal
+            show={this.state.showQuickAdd}
+            onInputChange={(event)=> this.setState({
+              addTodoValue: event.nativeEvent.text
+            })}
+            onSubmit={()=> this.handleQuickAdd()}
+            value={this.state.addTodoValue}
+            placeholder={
+              `Add ${this.state.quickAddType ? this.state.quickAddType.toUpperCase() : ''} task`
+            }
+            onSubmitClick={()=> this.handleQuickAdd()}
+            onCloseClick={()=> this.toggleQuickAdd()}
+          />
         </Content>
       </Container>
     )

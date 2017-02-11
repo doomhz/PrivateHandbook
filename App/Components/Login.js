@@ -7,9 +7,7 @@ import {
   InputGroup, Icon, Input,
   Button, Card, CardItem, Text
 } from 'native-base'
-import {
-  loginStyles
-} from '../lib/Styles'
+import {loginStyles} from '../lib/Styles'
 import {
   login, signup, resetLoginErrors, resetSignupErrors
 } from '../lib/phbw/src/store/auth/actions'

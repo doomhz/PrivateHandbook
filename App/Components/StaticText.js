@@ -1,10 +1,6 @@
 import React from 'react'
-import {
-  StyleSheet
-} from 'react-native'
-import {
-  View, Text
-} from 'native-base'
+import {StyleSheet} from 'react-native'
+import {View, Text} from 'native-base'
 
 const BulletList = (props)=> {
   if (!props.items.length) return <View></View>
