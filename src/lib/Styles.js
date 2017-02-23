@@ -57,6 +57,16 @@ export const toDoListStyles = StyleSheet.create({
   },
   deleteButtonText: {
     color: '#FFF'
+  },
+  content: {
+    backgroundColor: '#fff'
+  },
+  infoButton: {
+    fontSize: 19,
+    color: '#1981fb'
+  },
+  addButton: {
+    color:'#384850'
   }
 })
 
@@ -143,5 +153,12 @@ export const mainStyles = StyleSheet.create({
   },
   quickAddButton: {
     marginTop: 5
+  }
+})
+
+export const sidebarStyles = StyleSheet.create({
+  container: {
+    width: 200,
+    backgroundColor: '#fff'
   }
 })

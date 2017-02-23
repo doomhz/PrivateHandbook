@@ -6,6 +6,7 @@ import {
   InputGroup, Icon, Input,
   Button
 } from 'native-base'
+import { InteractionManager, Animated } from 'react-native'
 import IconAwesome from 'react-native-vector-icons/FontAwesome'
 import TodosSwipeList from './TodosSwipeList'
 import {toDoListStyles} from '../lib/Styles'
@@ -21,11 +22,18 @@ class Todos extends React.Component{
   constructor(props) {
     super(props)
     this.state = {
-      addTodoValue: ''
+      addTodoValue: '',
+      listOpacity: new Animated.Value(0)
     }
   }
   componentDidMount() {
-    this.props.dispatch(loadTodos({sync: true}))
+    InteractionManager.runAfterInteractions(() => {
+      this.props.dispatch(loadTodos({sync: true}))
+      Animated.timing(this.state.listOpacity, {
+        toValue: 1,
+        duration: 100
+      }).start()
+    })
   }
   toggleTodo(todo){
     const newStatus = todo.status === TODO_STATUS_ACTIVE ? TODO_STATUS_COMPLETED : TODO_STATUS_ACTIVE
@@ -55,7 +63,7 @@ class Todos extends React.Component{
   }
   render() {
     return (
-      <Container style={{backgroundColor: '#fff'}}>
+      <Container style={toDoListStyles.content}>
         <Header>
           <Button
             transparent
@@ -70,30 +78,32 @@ class Todos extends React.Component{
           >
           <IconAwesome
               name='info-circle'
-              style={{fontSize: 19, color: '#1981fb'}}
+              style={toDoListStyles.infoButton}
             />
           </Button>
         </Header>
         <Content>
-          <TodosSwipeList
-            todos={this.props.todos}
-            dataSource={this.ds}
-            onToggle={this.toggleTodo.bind(this)}
-            onDelete={this.deleteTodo.bind(this)}
-          />
-          <InputGroup borderType='regular' style={toDoListStyles.addTodoBox}>
-            <Icon name='ios-add' style={{color:'#384850'}}/>
-            <Input
-              onChange={(event) => this.setState({addTodoValue: event.nativeEvent.text})}
-              onSubmitEditing={() => this.addTodo()}
-              placeholder={'Add todo'}
-              value={this.state.addTodoValue}
-              autoCorrect={false}
-              autoCapitalize="none"
-              blurOnSubmit={false}
-              returnKeyLabel="next"
+          <Animated.View style={{opacity: this.state.listOpacity}}>
+            <TodosSwipeList
+              todos={this.props.todos}
+              dataSource={this.ds}
+              onToggle={this.toggleTodo.bind(this)}
+              onDelete={this.deleteTodo.bind(this)}
             />
-          </InputGroup>
+            <InputGroup borderType='regular' style={toDoListStyles.addTodoBox}>
+              <Icon name='ios-add' style={toDoListStyles.addButton}/>
+              <Input
+                onChange={(event) => this.setState({addTodoValue: event.nativeEvent.text})}
+                onSubmitEditing={() => this.addTodo()}
+                placeholder={'Add todo'}
+                value={this.state.addTodoValue}
+                autoCorrect={false}
+                autoCapitalize="none"
+                blurOnSubmit={false}
+                returnKeyLabel="next"
+              />
+            </InputGroup>
+          </Animated.View>
         </Content>
       </Container>
     )
